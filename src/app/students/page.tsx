@@ -1,870 +1,1108 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import {
+  Users,
+  Search,
+  MapPin,
+  GraduationCap,
+  Heart,
+  Globe,
+  ChevronRight,
+  Filter,
+  ChevronDown,
+  UserPlus,
+  BookOpen,
+  Sparkles,
+  ArrowRight,
+  Award,
+  Calendar,
+  MessageCircle,
+  Share2,
+  X,
+  CheckCircle,
+  Loader2,
+  Mail,
+  Phone,
+  User,
+  Church,
+  Clock,
+  Star,
+  Shield,
+  Hash,
+  Linkedin,
+  Twitter,
+  Instagram,
+  Youtube,
+  Send,
+  Eye,
+  ThumbsUp,
+} from "lucide-react";
 
-export default function HomePage() {
-  const [email, setEmail] = useState("");
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
+// Student data - this would come from a database in production
+const initialStudents = [
+  {
+    id: 1,
+    name: "Albert Oduma",
+    country: "Nigeria",
+    university: "University of Calabar",
+    course: "Computer Science",
+    year: "3rd Year",
+    status: "Active",
+    prayerRequests: 12,
+    joinedDate: "2023",
+    bio: "Passionate about technology and using it to spread the gospel. Leading campus fellowship.",
+    email: "albert@email.com",
+    phone: "+234 812 345 6789",
+    fellowship: "Calabar Campus Fellowship",
+    skills: ["Web Development", "Prayer Leader", "Tech Evangelist"],
+    interests: ["Evangelism", "Tech", "Music"],
+    social: {
+      twitter: "@albertoduma",
+      instagram: "@albert.oduma",
+      linkedin: "albertoduma",
+    },
+  },
+  {
+    id: 2,
+    name: "Grace Mensah",
+    country: "Ghana",
+    university: "University of Ghana",
+    course: "Business Administration",
+    year: "2nd Year",
+    status: "Active",
+    prayerRequests: 8,
+    joinedDate: "2024",
+    bio: "Focused on building Christian businesses and leading worship on campus.",
+    email: "grace@email.com",
+    phone: "+233 555 123456",
+    fellowship: "Accra Campus Fellowship",
+    skills: ["Leadership", "Worship", "Business"],
+    interests: ["Worship", "Entrepreneurship", "Discipleship"],
+    social: {
+      twitter: "@gracemensah",
+      instagram: "@grace.mensah",
+      linkedin: "gracemensah",
+    },
+  },
+  {
+    id: 3,
+    name: "Daniel Kiprop",
+    country: "Kenya",
+    university: "University of Nairobi",
+    course: "Medicine",
+    year: "4th Year",
+    status: "Active",
+    prayerRequests: 15,
+    joinedDate: "2022",
+    bio: "Medical student with a passion for healthcare missions and evangelism.",
+    email: "daniel@email.com",
+    phone: "+254 700 123456",
+    fellowship: "Nairobi Campus Fellowship",
+    skills: ["Medical", "Public Speaking", "Missions"],
+    interests: ["Healthcare", "Missions", "Evangelism"],
+    social: {
+      twitter: "@danielkiprop",
+      instagram: "@daniel.kiprop",
+      linkedin: "danielkiprop",
+    },
+  },
+  {
+    id: 4,
+    name: "Sarah Johnson",
+    country: "United States",
+    university: "Harvard University",
+    course: "Theology",
+    year: "1st Year",
+    status: "Active",
+    prayerRequests: 5,
+    joinedDate: "2025",
+    bio: "Pursuing theological studies while leading campus prayer groups.",
+    email: "sarah@email.com",
+    phone: "+1 800 555 0199",
+    fellowship: "Boston Campus Fellowship",
+    skills: ["Prayer Leadership", "Bible Study", "Teaching"],
+    interests: ["Theology", "Prayer", "Mentoring"],
+    social: {
+      twitter: "@sarahjohnson",
+      instagram: "@sarah.johnson",
+      linkedin: "sarahjohnson",
+    },
+  },
+  {
+    id: 5,
+    name: "Michael Osei",
+    country: "Ghana",
+    university: "Kwame Nkrumah University",
+    course: "Engineering",
+    year: "3rd Year",
+    status: "Prayed",
+    prayerRequests: 20,
+    joinedDate: "2023",
+    bio: "Engineering student passionate about using technology for ministry.",
+    email: "michael@email.com",
+    phone: "+233 555 789012",
+    fellowship: "Kumasi Campus Fellowship",
+    skills: ["Engineering", "Tech", "Project Management"],
+    interests: ["Tech", "Innovation", "Outreach"],
+    social: {
+      twitter: "@michaelosei",
+      instagram: "@michael.osei",
+      linkedin: "michaelosei",
+    },
+  },
+  {
+    id: 6,
+    name: "Faith Ndlovu",
+    country: "South Africa",
+    university: "University of Cape Town",
+    course: "Law",
+    year: "2nd Year",
+    status: "Active",
+    prayerRequests: 7,
+    joinedDate: "2024",
+    bio: "Law student committed to justice and advocating for Christian values.",
+    email: "faith@email.com",
+    phone: "+27 82 345 6789",
+    fellowship: "Cape Town Campus Fellowship",
+    skills: ["Legal", "Advocacy", "Writing"],
+    interests: ["Justice", "Human Rights", "Law"],
+    social: {
+      twitter: "@faithndlovu",
+      instagram: "@faith.ndlovu",
+      linkedin: "faithndlovu",
+    },
+  },
+];
 
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
+// Fellowship groups
+const fellowships = [
+  { id: 1, name: "Calabar Campus Fellowship", country: "Nigeria", members: 45, leader: "Albert Oduma" },
+  { id: 2, name: "Accra Campus Fellowship", country: "Ghana", members: 38, leader: "Grace Mensah" },
+  { id: 3, name: "Nairobi Campus Fellowship", country: "Kenya", members: 52, leader: "Daniel Kiprop" },
+  { id: 4, name: "Boston Campus Fellowship", country: "USA", members: 30, leader: "Sarah Johnson" },
+  { id: 5, name: "Kumasi Campus Fellowship", country: "Ghana", members: 28, leader: "Michael Osei" },
+  { id: 6, name: "Cape Town Campus Fellowship", country: "South Africa", members: 35, leader: "Faith Ndlovu" },
+  { id: 7, name: "Lagos Campus Fellowship", country: "Nigeria", members: 60, leader: "David Okonkwo" },
+  { id: 8, name: "Nairobi Tech Fellowship", country: "Kenya", members: 25, leader: "Peter Mwangi" },
+];
 
-  const testimonials = [
-    {
-      id: 1,
-      name: "Albert Oduma",
-      role: "Student Leader, Nigeria",
-      text: "DLCSF has transformed my walk with God. The community, prayer support, and discipleship have been incredible.",
-      rating: 5,
-    },
-    {
-      id: 2,
-      name: "Grace Mensah",
-      role: "Worship Leader, Ghana",
-      text: "Through DLCSF, I've found a global family of believers who are passionate about spreading the Gospel.",
-      rating: 5,
-    },
-    {
-      id: 3,
-      name: "Daniel Kiprop",
-      role: "Medical Student, Kenya",
-      text: "Being part of DLCSF has given me purpose and direction. I'm now pursuing missions alongside my studies.",
-      rating: 5,
-    },
-    {
-      id: 4,
-      name: "Sarah Johnson",
-      role: "Theology Student, USA",
-      text: "DLCSF connects students from different cultures, united by one faith. It's truly a global movement.",
-      rating: 5,
-    },
-  ];
+const countries = ["All", ...new Set(initialStudents.map(s => s.country))];
+const statuses = ["All", ...new Set(initialStudents.map(s => s.status))];
 
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: "Global Prayer Conference 2026",
-      date: "December 15-17, 2026",
-      location: "Virtual & In-Person",
-      type: "Conference",
-      color: "blue",
-    },
-    {
-      id: 2,
-      title: "Campus Fellowship Week",
-      date: "December 20-25, 2026",
-      location: "Various Campuses",
-      type: "Fellowship",
-      color: "green",
-    },
-    {
-      id: 3,
-      title: "Global Mission Outreach",
-      date: "January 10-20, 2027",
-      location: "Multiple Locations",
-      type: "Mission",
-      color: "orange",
-    },
-    {
-      id: 4,
-      title: "Worship Night 2026",
-      date: "November 25, 2026",
-      location: "Main Auditorium",
-      type: "Worship",
-      color: "purple",
-    },
-  ];
+export default function StudentsPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("All");
+  const [selectedStatus, setSelectedStatus] = useState("All");
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [showRegistration, setShowRegistration] = useState(false);
+  const [showFellowship, setShowFellowship] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState("students");
+  const [students, setStudents] = useState(initialStudents);
 
-  const countries = [
-    "Nigeria", "Ghana", "Kenya", "South Africa", "USA", "UK", 
-    "Canada", "Australia", "Germany", "France", "Brazil", "India"
-  ];
+  // Registration form state
+  const [registerForm, setRegisterForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    country: "",
+    university: "",
+    course: "",
+    year: "",
+    fellowship: "",
+    bio: "",
+    interests: "",
+  });
 
-  const resources = [
-    { icon: "📖", title: "Sermons", desc: "Powerful messages", link: "/sermons" },
-    { icon: "📚", title: "Bible Study", desc: "Study guides", link: "/bible-study" },
-    { icon: "🎵", title: "Worship", desc: "Music & praise", link: "/worship" },
-    { icon: "🎙️", title: "Podcasts", desc: "Listen & learn", link: "/podcast" },
-    { icon: "📝", title: "Blog", desc: "Articles & insights", link: "/blog" },
-    { icon: "🎥", title: "Videos", desc: "Watch & share", link: "/videos" },
-  ];
-
-  const nextTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+  const handleRegisterChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setRegisterForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const prevTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Simulate registration
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      // Add new student to list
+      const newStudent = {
+        id: students.length + 1,
+        name: registerForm.name,
+        country: registerForm.country,
+        university: registerForm.university,
+        course: registerForm.course,
+        year: registerForm.year || "1st Year",
+        status: "Active",
+        prayerRequests: 0,
+        joinedDate: new Date().getFullYear().toString(),
+        bio: registerForm.bio || "New DLCSF Student",
+        email: registerForm.email,
+        phone: registerForm.phone || "",
+        fellowship: registerForm.fellowship || "Not Assigned",
+        skills: [],
+        interests: registerForm.interests ? registerForm.interests.split(",").map(s => s.trim()) : [],
+        social: {},
+      };
+
+      setStudents((prev) => [...prev, newStudent]);
+      setRegistrationSuccess(true);
+      setIsSubmitting(false);
+
+      setTimeout(() => {
+        setShowRegistration(false);
+        setRegistrationSuccess(false);
+        setRegisterForm({
+          name: "",
+          email: "",
+          phone: "",
+          country: "",
+          university: "",
+          course: "",
+          year: "",
+          fellowship: "",
+          bio: "",
+          interests: "",
+        });
+      }, 3000);
+
+    } catch (error) {
+      console.error("Registration error:", error);
+      setIsSubmitting(false);
+    }
+  };
+
+  const filteredStudents = students.filter((student) => {
+    const matchesSearch =
+      student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.university.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.course.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.bio.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.fellowship.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesCountry =
+      selectedCountry === "All" || student.country === selectedCountry;
+
+    const matchesStatus =
+      selectedStatus === "All" || student.status === selectedStatus;
+
+    return matchesSearch && matchesCountry && matchesStatus;
+  });
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Active":
+        return "bg-green-100 text-green-700";
+      case "Prayed":
+        return "bg-yellow-100 text-yellow-700";
+      case "Completed":
+        return "bg-blue-100 text-blue-700";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
+  };
+
+  const getInitials = (name: string) => {
+    return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
   };
 
   return (
-    <main>
-      {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src="/images/gallery1.jpg"
-            alt="DLCSF Global"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-blue-950/70" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-blue-950/30" />
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-blue-950 via-blue-900 to-blue-700 text-white py-20 px-6 overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-yellow-400/10 rounded-full blur-3xl"></div>
         </div>
-
-        <div className={`relative z-10 text-center text-white px-6 max-w-5xl mx-auto transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="inline-flex items-center gap-2 bg-yellow-400/20 backdrop-blur border border-yellow-400/30 px-6 py-2 rounded-full mb-6">
-            <span className="text-yellow-400">🌍</span>
-            <span className="text-sm font-medium">Global Christian Fellowship</span>
+        <div className="max-w-6xl mx-auto text-center relative">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur rounded-full px-4 py-2 mb-6">
+            <Users size={20} className="text-yellow-400" />
+            <span className="text-sm font-medium">Global Student Community</span>
           </div>
-
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-tight">
-            <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-              DLCSF
-            </span>
-            <span className="block text-white">Global</span>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+            Students Across the World
           </h1>
-
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto mb-10 text-blue-100">
-            Standing together in faith across nations. Connecting students and believers worldwide.
+          <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto">
+            Connect with students from over 50 countries, join fellowships, and grow in faith together.
           </p>
-
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              href="/prayer"
-              className="bg-yellow-400 text-blue-950 px-8 py-4 rounded-full font-bold hover:bg-yellow-300 transition transform hover:scale-105 shadow-lg shadow-yellow-400/20"
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <button
+              onClick={() => setShowRegistration(true)}
+              className="bg-yellow-400 text-blue-950 px-8 py-3 rounded-full font-bold hover:bg-yellow-300 transition transform hover:scale-105"
             >
-              Submit Prayer Request
-            </Link>
-            <Link
-              href="/countries"
-              className="bg-white/20 text-white px-8 py-4 rounded-full font-bold backdrop-blur hover:bg-white/30 transition border border-white/20"
+              <UserPlus size={18} className="inline mr-2" />
+              Join as Student
+            </button>
+            <button
+              onClick={() => setShowFellowship(true)}
+              className="bg-white/20 text-white px-8 py-3 rounded-full font-bold backdrop-blur hover:bg-white/30 transition border border-white/20"
             >
-              Explore Countries
-            </Link>
-            <Link
-              href="/students"
-              className="bg-blue-600 text-white px-8 py-4 rounded-full font-bold hover:bg-blue-700 transition shadow-lg hover:shadow-xl"
-            >
-              Join Students →
-            </Link>
-          </div>
-
-          <div className="mt-12 flex flex-wrap justify-center gap-6 text-sm text-gray-300">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              <span>10,000+ Students</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
-              <span>50+ Countries</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
-              <span>180+ Campuses</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-8 h-12 border-2 border-white/30 rounded-full flex items-start justify-center p-2">
-            <div className="w-1.5 h-3 bg-white/50 rounded-full animate-pulse"></div>
+              <Church size={18} className="inline mr-2" />
+              Find Fellowship
+            </button>
           </div>
         </div>
       </section>
 
-      {/* ===== STATS SECTION ===== */}
-      <section className="py-16 bg-gradient-to-br from-blue-50 to-indigo-50 px-6">
+      {/* Stats Banner */}
+      <section className="bg-white border-b py-6 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
-              <div className="text-4xl font-bold text-blue-900">50+</div>
-              <div className="text-gray-600 mt-1">Countries</div>
-              <div className="text-xs text-gray-400 mt-2">🌍 Worldwide</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div className="p-3">
+              <p className="text-3xl font-bold text-blue-900">{students.length}+</p>
+              <p className="text-sm text-gray-500">Students</p>
             </div>
-            <div className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
-              <div className="text-4xl font-bold text-blue-900">180+</div>
-              <div className="text-gray-600 mt-1">Campuses</div>
-              <div className="text-xs text-gray-400 mt-2">🏫 Universities</div>
+            <div className="p-3">
+              <p className="text-3xl font-bold text-blue-900">50+</p>
+              <p className="text-sm text-gray-500">Countries</p>
             </div>
-            <div className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
-              <div className="text-4xl font-bold text-blue-900">10K+</div>
-              <div className="text-gray-600 mt-1">Students</div>
-              <div className="text-xs text-gray-400 mt-2">👥 Active Members</div>
+            <div className="p-3">
+              <p className="text-3xl font-bold text-blue-900">{fellowships.length}</p>
+              <p className="text-sm text-gray-500">Fellowships</p>
             </div>
-            <div className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
-              <div className="text-4xl font-bold text-blue-900">2K+</div>
-              <div className="text-gray-600 mt-1">Churches</div>
-              <div className="text-xs text-gray-400 mt-2">⛪ Partnered</div>
+            <div className="p-3">
+              <p className="text-3xl font-bold text-blue-900">180+</p>
+              <p className="text-sm text-gray-500">Campuses</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ===== QUICK LINKS SECTION ===== */}
-      <section className="py-20 bg-white px-6">
+      {/* Tabs */}
+      <section className="bg-white border-b px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="text-blue-600 font-bold text-sm uppercase tracking-wider">Quick Access</span>
-            <h2 className="text-4xl font-bold text-blue-950 mt-2">Connect With Us</h2>
-            <p className="text-gray-600 mt-3 max-w-2xl mx-auto">
-              Explore the different ways you can connect, grow, and be part of the DLCSF Global community.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-4 gap-6">
-            <Link
-              href="/register"
-              className="group bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center hover:shadow-xl transition transform hover:-translate-y-1 border border-blue-200/50"
+          <div className="flex gap-1">
+            <button
+              onClick={() => setActiveTab("students")}
+              className={`px-6 py-3 font-semibold transition border-b-2 ${
+                activeTab === "students"
+                  ? "border-blue-900 text-blue-900"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
             >
-              <div className="text-4xl mb-3 group-hover:scale-110 transition">👥</div>
-              <h3 className="text-lg font-bold text-blue-900">Join Us</h3>
-              <p className="text-sm text-gray-600">Become part of the family</p>
-              <span className="inline-block mt-3 text-blue-600 font-semibold text-sm group-hover:underline">Learn More →</span>
-            </Link>
-
-            <Link
-              href="/events"
-              className="group bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 text-center hover:shadow-xl transition transform hover:-translate-y-1 border border-green-200/50"
+              <Users size={18} className="inline mr-2" />
+              Students
+            </button>
+            <button
+              onClick={() => setActiveTab("fellowships")}
+              className={`px-6 py-3 font-semibold transition border-b-2 ${
+                activeTab === "fellowships"
+                  ? "border-blue-900 text-blue-900"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
             >
-              <div className="text-4xl mb-3 group-hover:scale-110 transition">📅</div>
-              <h3 className="text-lg font-bold text-green-900">Events</h3>
-              <p className="text-sm text-gray-600">Conferences & retreats</p>
-              <span className="inline-block mt-3 text-green-600 font-semibold text-sm group-hover:underline">View All →</span>
-            </Link>
-
-            <Link
-              href="/about"
-              className="group bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 text-center hover:shadow-xl transition transform hover:-translate-y-1 border border-purple-200/50"
+              <Church size={18} className="inline mr-2" />
+              Fellowships
+            </button>
+            <button
+              onClick={() => setActiveTab("join")}
+              className={`px-6 py-3 font-semibold transition border-b-2 ${
+                activeTab === "join"
+                  ? "border-blue-900 text-blue-900"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
             >
-              <div className="text-4xl mb-3 group-hover:scale-110 transition">🌍</div>
-              <h3 className="text-lg font-bold text-purple-900">About DLCSF</h3>
-              <p className="text-sm text-gray-600">Our vision & mission</p>
-              <span className="inline-block mt-3 text-purple-600 font-semibold text-sm group-hover:underline">Learn More →</span>
-            </Link>
-
-            <Link
-              href="/dashboard"
-              className="group bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-6 text-center hover:shadow-xl transition transform hover:-translate-y-1 border border-orange-200/50"
-            >
-              <div className="text-4xl mb-3 group-hover:scale-110 transition">📊</div>
-              <h3 className="text-lg font-bold text-orange-900">Dashboard</h3>
-              <p className="text-sm text-gray-600">Your profile & activity</p>
-              <span className="inline-block mt-3 text-orange-600 font-semibold text-sm group-hover:underline">Go Now →</span>
-            </Link>
+              <UserPlus size={18} className="inline mr-2" />
+              Join Fellowship
+            </button>
           </div>
         </div>
       </section>
 
-      {/* ===== MISSION SECTION ===== */}
-      <section className="py-20 bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 text-white px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <span className="text-yellow-400 font-bold text-sm uppercase tracking-wider flex items-center gap-2">
-                <span className="w-8 h-0.5 bg-yellow-400"></span>
-                Our Mission
-              </span>
-              <h2 className="text-4xl md:text-5xl font-bold leading-tight">
-                Reaching Students.
-                <br />
-                <span className="text-yellow-400">Changing Lives.</span>
+      {/* Students Tab */}
+      {activeTab === "students" && (
+        <>
+          {/* Search and Filters */}
+          <section className="py-6 px-6 bg-white border-b sticky top-0 z-20 shadow-sm">
+            <div className="max-w-6xl mx-auto">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 relative">
+                  <Search size={20} className="absolute left-4 top-3.5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search by name, university, course, or fellowship..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full border border-gray-300 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                  />
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <div className="relative">
+                    <select
+                      value={selectedCountry}
+                      onChange={(e) => setSelectedCountry(e.target.value)}
+                      className="border border-gray-300 rounded-xl px-4 py-3 pr-10 focus:ring-2 focus:ring-blue-500 outline-none appearance-none bg-white"
+                    >
+                      {countries.map((country) => (
+                        <option key={country} value={country}>
+                          {country}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown size={16} className="absolute right-4 top-4 text-gray-400 pointer-events-none" />
+                  </div>
+                  <div className="relative">
+                    <select
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                      className="border border-gray-300 rounded-xl px-4 py-3 pr-10 focus:ring-2 focus:ring-blue-500 outline-none appearance-none bg-white"
+                    >
+                      {statuses.map((status) => (
+                        <option key={status} value={status}>
+                          Status: {status}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown size={16} className="absolute right-4 top-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Students Grid */}
+          <section className="py-12 px-6">
+            <div className="max-w-6xl mx-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gray-800">
+                  {filteredStudents.length} {filteredStudents.length === 1 ? "Student" : "Students"}
+                </h2>
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <span>Sort by:</span>
+                  <select className="border rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option>Latest</option>
+                    <option>Prayer Requests</option>
+                    <option>Name</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredStudents.map((student) => (
+                  <div
+                    key={student.id}
+                    className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition group"
+                  >
+                    {/* Avatar */}
+                    <div className="h-32 bg-gradient-to-br from-blue-700 to-indigo-700 relative flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white text-3xl font-bold border-2 border-white/30">
+                        {getInitials(student.name)}
+                      </div>
+                      <div className="absolute top-3 right-3">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(student.status)}`}>
+                          {student.status}
+                        </span>
+                      </div>
+                      <div className="absolute bottom-3 right-3">
+                        <span className="bg-black/50 text-white text-xs px-2 py-0.5 rounded backdrop-blur">
+                          {student.country}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-5">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <h3 className="font-bold text-gray-800 group-hover:text-blue-700 transition">
+                            {student.name}
+                          </h3>
+                          <p className="text-sm text-gray-500 flex items-center gap-1">
+                            <GraduationCap size={14} />
+                            {student.university}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                          {student.course}
+                        </span>
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                          {student.year}
+                        </span>
+                        {student.fellowship && (
+                          <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded">
+                            {student.fellowship}
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="text-sm text-gray-600 mt-3 line-clamp-2">
+                        {student.bio}
+                      </p>
+
+                      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+                        <div className="flex items-center gap-2 text-sm">
+                          <Heart size={16} className="text-red-500" />
+                          <span className="font-medium">{student.prayerRequests}</span>
+                          <span className="text-gray-400">prayers</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-gray-400">
+                          <Calendar size={12} />
+                          Joined {student.joinedDate}
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 mt-3">
+                        <button
+                          onClick={() => setSelectedStudent(student)}
+                          className="flex-1 bg-blue-900 text-white px-3 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition"
+                        >
+                          View Profile
+                        </button>
+                        <button 
+                          className="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition text-gray-600"
+                          title="Send Message"
+                        >
+                          <MessageCircle size={16} />
+                        </button>
+                        <button 
+                          className="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition text-gray-600"
+                          title="Share"
+                        >
+                          <Share2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {filteredStudents.length === 0 && (
+                <div className="text-center py-16">
+                  <Users size={64} className="mx-auto text-gray-300 mb-4" />
+                  <h3 className="text-xl font-bold text-gray-600">No students found</h3>
+                  <p className="text-gray-400 mt-2">Try adjusting your search or filters</p>
+                </div>
+              )}
+            </div>
+          </section>
+        </>
+      )}
+
+      {/* Fellowships Tab */}
+      {activeTab === "fellowships" && (
+        <section className="py-12 px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-blue-950 mb-4">
+                Campus Fellowships
               </h2>
-              <p className="text-blue-200 text-lg leading-relaxed">
-                DLCSF Global exists to connect students and believers across nations
-                through faith, prayer, discipleship, evangelism, and Christian fellowship.
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Join a fellowship near you and connect with other students who share your faith.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Link
-                  href="/about"
-                  className="bg-yellow-400 text-blue-950 px-8 py-3 rounded-full font-bold hover:bg-yellow-300 transition transform hover:scale-105 shadow-lg shadow-yellow-400/20"
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {fellowships.map((fellowship) => (
+                <div
+                  key={fellowship.id}
+                  className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition hover:-translate-y-1"
                 >
-                  Learn More
-                </Link>
-                <Link
-                  href="/students"
-                  className="bg-white/20 text-white px-8 py-3 rounded-full font-bold hover:bg-white/30 transition backdrop-blur border border-white/20"
-                >
-                  Join Students
-                </Link>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-6 text-center border border-white/10 hover:bg-white/20 transition transform hover:-translate-y-1">
-                <div className="text-5xl mb-3">✝️</div>
-                <h4 className="font-bold text-xl">Evangelism</h4>
-                <p className="text-sm text-blue-200 mt-1">Sharing the Gospel worldwide</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-6 text-center border border-white/10 hover:bg-white/20 transition transform hover:-translate-y-1">
-                <div className="text-5xl mb-3">🙏</div>
-                <h4 className="font-bold text-xl">Prayer</h4>
-                <p className="text-sm text-blue-200 mt-1">Global intercession</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-6 text-center border border-white/10 hover:bg-white/20 transition transform hover:-translate-y-1">
-                <div className="text-5xl mb-3">📖</div>
-                <h4 className="font-bold text-xl">Discipleship</h4>
-                <p className="text-sm text-blue-200 mt-1">Growing in faith together</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-6 text-center border border-white/10 hover:bg-white/20 transition transform hover:-translate-y-1">
-                <div className="text-5xl mb-3">❤️</div>
-                <h4 className="font-bold text-xl">Fellowship</h4>
-                <p className="text-sm text-blue-200 mt-1">Community & connection</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== STUDENTS SECTION ===== */}
-      <section className="py-20 bg-white px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="text-blue-600 font-bold text-sm uppercase tracking-wider">Global Community</span>
-            <h2 className="text-4xl font-bold text-blue-950 mt-2">Students Across The World</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto mt-3">
-              Meet students from different countries who are part of the DLCSF Global community.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center hover:shadow-xl transition transform hover:-translate-y-1 border border-blue-200/50">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center mx-auto text-white text-2xl font-bold shadow-lg">
-                AO
-              </div>
-              <h4 className="font-bold text-lg mt-4 text-gray-800">Albert Oduma</h4>
-              <p className="text-sm text-gray-600">Nigeria • University of Calabar</p>
-              <div className="flex justify-center gap-2 mt-3">
-                <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">Computer Science</span>
-                <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">3rd Year</span>
-              </div>
-              <div className="mt-3 flex justify-center text-yellow-400 text-sm">
-                {[...Array(4)].map((_, i) => (
-                  <span key={i}>⭐</span>
-                ))}
-                <span className="text-gray-300">⭐</span>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 text-center hover:shadow-xl transition transform hover:-translate-y-1 border border-green-200/50">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-600 to-green-800 rounded-full flex items-center justify-center mx-auto text-white text-2xl font-bold shadow-lg">
-                GM
-              </div>
-              <h4 className="font-bold text-lg mt-4 text-gray-800">Grace Mensah</h4>
-              <p className="text-sm text-gray-600">Ghana • University of Ghana</p>
-              <div className="flex justify-center gap-2 mt-3">
-                <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">Business Admin</span>
-                <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">2nd Year</span>
-              </div>
-              <div className="mt-3 flex justify-center text-yellow-400 text-sm">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i}>⭐</span>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 text-center hover:shadow-xl transition transform hover:-translate-y-1 border border-purple-200/50">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-purple-800 rounded-full flex items-center justify-center mx-auto text-white text-2xl font-bold shadow-lg">
-                DK
-              </div>
-              <h4 className="font-bold text-lg mt-4 text-gray-800">Daniel Kiprop</h4>
-              <p className="text-sm text-gray-600">Kenya • University of Nairobi</p>
-              <div className="flex justify-center gap-2 mt-3">
-                <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">Medicine</span>
-                <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">4th Year</span>
-              </div>
-              <div className="mt-3 flex justify-center text-yellow-400 text-sm">
-                {[...Array(4)].map((_, i) => (
-                  <span key={i}>⭐</span>
-                ))}
-                <span className="text-gray-300">⭐</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center mt-10">
-            <Link
-              href="/students"
-              className="inline-block bg-blue-900 text-white px-10 py-4 rounded-full font-bold hover:bg-blue-800 transition transform hover:scale-105 shadow-lg"
-            >
-              View All Students →
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== COUNTRIES SECTION ===== */}
-      <section className="py-20 bg-gray-50 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <span className="text-blue-600 font-bold text-sm uppercase tracking-wider flex items-center gap-2">
-                <span className="w-8 h-0.5 bg-blue-600"></span>
-                Global Reach
-              </span>
-              <h2 className="text-4xl font-bold text-blue-950 mt-4 mb-6">
-                Present in Over 50 Countries
-              </h2>
-              <p className="text-gray-600 text-lg leading-relaxed mb-6">
-                From Africa to the Americas, Europe to Asia, DLCSF Global is building
-                a community of believers across the world.
-              </p>
-              <div className="flex flex-wrap gap-2 mb-6">
-                {["🌍 Africa", "🌎 Americas", "🌏 Asia", "🌍 Europe", "🌏 Oceania"].map((region) => (
-                  <span key={region} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                    {region}
-                  </span>
-                ))}
-              </div>
-              <Link
-                href="/countries"
-                className="inline-block bg-blue-900 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-800 transition shadow-lg"
-              >
-                Explore All Countries →
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { flag: "🇳🇬", name: "Nigeria", members: "25K" },
-                { flag: "🇬🇭", name: "Ghana", members: "15K" },
-                { flag: "🇰🇪", name: "Kenya", members: "12K" },
-                { flag: "🇺🇸", name: "USA", members: "20K" },
-                { flag: "🇬🇧", name: "UK", members: "10K" },
-                { flag: "🇨🇦", name: "Canada", members: "6K" },
-              ].map((country) => (
-                <div key={country.name} className="bg-white rounded-xl p-4 text-center shadow hover:shadow-lg transition transform hover:-translate-y-1">
-                  <span className="text-3xl block">{country.flag}</span>
-                  <p className="text-sm font-bold mt-2 text-gray-800">{country.name}</p>
-                  <p className="text-xs text-gray-500">{country.members} Members</p>
+                  <div className="bg-gradient-to-br from-blue-700 to-indigo-700 text-white p-6">
+                    <Church size={32} className="mb-3" />
+                    <h3 className="text-xl font-bold">{fellowship.name}</h3>
+                    <p className="text-sm text-blue-200">{fellowship.country}</p>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Users size={16} className="text-gray-400" />
+                        <span className="font-medium">{fellowship.members} members</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <User size={16} className="text-gray-400" />
+                        <span className="text-gray-600">Led by {fellowship.leader}</span>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        setShowFellowship(true);
+                        setRegisterForm(prev => ({ ...prev, fellowship: fellowship.name }));
+                      }}
+                      className="w-full bg-blue-900 text-white py-2.5 rounded-xl font-semibold hover:bg-blue-800 transition flex items-center justify-center gap-2"
+                    >
+                      <UserPlus size={16} />
+                      Join This Fellowship
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* ===== EVENTS SECTION ===== */}
-      <section className="py-20 bg-white px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="text-blue-600 font-bold text-sm uppercase tracking-wider">Upcoming</span>
-            <h2 className="text-4xl font-bold text-blue-950 mt-2">Events & Gatherings</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto mt-3">
-              Join us for powerful conferences, retreats, and fellowship gatherings.
-            </p>
+      {/* Join Tab */}
+      {activeTab === "join" && (
+        <section className="py-12 px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-blue-950 mb-4">
+                  Join a Fellowship
+                </h2>
+                <p className="text-gray-600">
+                  Find and join a campus fellowship near you. Connect with other students and grow in faith.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                {fellowships.map((fellowship) => (
+                  <button
+                    key={fellowship.id}
+                    onClick={() => {
+                      setRegisterForm(prev => ({ ...prev, fellowship: fellowship.name }));
+                      setShowRegistration(true);
+                    }}
+                    className="p-4 border rounded-2xl text-left hover:bg-blue-50 transition group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Church size={24} className="text-blue-600 group-hover:scale-110 transition" />
+                      <div>
+                        <p className="font-bold text-gray-800">{fellowship.name}</p>
+                        <p className="text-sm text-gray-500">{fellowship.country}</p>
+                      </div>
+                      <ChevronRight size={16} className="ml-auto text-gray-400" />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
+        </section>
+      )}
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {upcomingEvents.map((event) => {
-              const colorClasses = {
-                blue: "from-blue-600 to-blue-800",
-                green: "from-green-600 to-green-800",
-                orange: "from-orange-600 to-orange-800",
-                purple: "from-purple-600 to-purple-800",
-              };
-              return (
-                <div key={event.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 border border-gray-100">
-                  <div className={`bg-gradient-to-r ${colorClasses[event.color as keyof typeof colorClasses]} text-white p-4`}>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{event.date}</span>
-                      <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold">{event.type}</span>
+      {/* Registration Modal */}
+      {showRegistration && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {registrationSuccess ? (
+              <div className="p-8 text-center">
+                <CheckCircle size={80} className="mx-auto text-green-500 mb-6" />
+                <h2 className="text-3xl font-bold text-gray-800 mb-4">
+                  Registration Successful! 🎉
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  Welcome to the DLCSF Global student community! You are now part of a global family of believers.
+                </p>
+                <button
+                  onClick={() => setShowRegistration(false)}
+                  className="bg-blue-900 text-white px-8 py-3 rounded-xl hover:bg-blue-800 transition"
+                >
+                  Close
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="p-8">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-3xl font-bold text-gray-800">Join as Student</h2>
+                    <button
+                      onClick={() => setShowRegistration(false)}
+                      className="p-2 hover:bg-gray-100 rounded-full transition"
+                    >
+                      <X size={24} className="text-gray-500" />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleRegisterSubmit} className="space-y-4">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Full Name *
+                        </label>
+                        <input
+                          type="text"
+                          name="name"
+                          required
+                          value={registerForm.name}
+                          onChange={handleRegisterChange}
+                          placeholder="Enter your full name"
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Email *
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          required
+                          value={registerForm.email}
+                          onChange={handleRegisterChange}
+                          placeholder="Enter your email"
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Phone
+                        </label>
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={registerForm.phone}
+                          onChange={handleRegisterChange}
+                          placeholder="Enter your phone number"
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Country *
+                        </label>
+                        <select
+                          name="country"
+                          required
+                          value={registerForm.country}
+                          onChange={handleRegisterChange}
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                        >
+                          <option value="">Select your country</option>
+                          <option value="Nigeria">Nigeria</option>
+                          <option value="Ghana">Ghana</option>
+                          <option value="Kenya">Kenya</option>
+                          <option value="South Africa">South Africa</option>
+                          <option value="USA">USA</option>
+                          <option value="UK">UK</option>
+                          <option value="Canada">Canada</option>
+                          <option value="Australia">Australia</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          University *
+                        </label>
+                        <input
+                          type="text"
+                          name="university"
+                          required
+                          value={registerForm.university}
+                          onChange={handleRegisterChange}
+                          placeholder="Enter your university"
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Course / Major *
+                        </label>
+                        <input
+                          type="text"
+                          name="course"
+                          required
+                          value={registerForm.course}
+                          onChange={handleRegisterChange}
+                          placeholder="Enter your course"
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Year of Study
+                        </label>
+                        <select
+                          name="year"
+                          value={registerForm.year}
+                          onChange={handleRegisterChange}
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                        >
+                          <option value="">Select year</option>
+                          <option value="1st Year">1st Year</option>
+                          <option value="2nd Year">2nd Year</option>
+                          <option value="3rd Year">3rd Year</option>
+                          <option value="4th Year">4th Year</option>
+                          <option value="5th Year">5th Year</option>
+                          <option value="Graduate">Graduate</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Fellowship
+                        </label>
+                        <select
+                          name="fellowship"
+                          value={registerForm.fellowship}
+                          onChange={handleRegisterChange}
+                          className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                        >
+                          <option value="">Select a fellowship</option>
+                          {fellowships.map((f) => (
+                            <option key={f.id} value={f.name}>
+                              {f.name} - {f.country}
+                            </option>
+                          ))}
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Bio
+                      </label>
+                      <textarea
+                        name="bio"
+                        rows={3}
+                        value={registerForm.bio}
+                        onChange={handleRegisterChange}
+                        placeholder="Tell us about yourself..."
+                        className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Interests (comma separated)
+                      </label>
+                      <input
+                        type="text"
+                        name="interests"
+                        value={registerForm.interests}
+                        onChange={handleRegisterChange}
+                        placeholder="e.g. Music, Prayer, Evangelism, Tech"
+                        className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                      />
+                    </div>
+
+                    <div className="flex gap-4 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowRegistration(false)}
+                        className="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-300 transition"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="flex-1 bg-blue-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-800 transition flex items-center justify-center gap-2 disabled:opacity-70"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 size={20} className="animate-spin" />
+                            Submitting...
+                          </>
+                        ) : (
+                          <>
+                            <UserPlus size={20} />
+                            Join Now
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Fellowship Modal */}
+      {showFellowship && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-bold text-gray-800">Find a Fellowship</h2>
+              <button
+                onClick={() => setShowFellowship(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition"
+              >
+                <X size={24} className="text-gray-500" />
+              </button>
+            </div>
+
+            <div className="grid gap-4">
+              {fellowships.map((fellowship) => (
+                <div
+                  key={fellowship.id}
+                  className="p-4 border rounded-2xl hover:bg-blue-50 transition group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Church size={24} className="text-blue-600" />
+                      <div>
+                        <h3 className="font-bold text-gray-800">{fellowship.name}</h3>
+                        <p className="text-sm text-gray-500">{fellowship.country}</p>
+                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-400">
+                          <Users size={12} />
+                          <span>{fellowship.members} members</span>
+                          <span>•</span>
+                          <span>Led by {fellowship.leader}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setRegisterForm(prev => ({ ...prev, fellowship: fellowship.name }));
+                        setShowFellowship(false);
+                        setShowRegistration(true);
+                      }}
+                      className="bg-blue-900 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-800 transition"
+                    >
+                      Join
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 p-4 bg-gray-50 rounded-2xl">
+              <p className="text-sm text-gray-600">
+                Can't find your fellowship?{" "}
+                <button
+                  onClick={() => {
+                    setShowFellowship(false);
+                    setShowRegistration(true);
+                  }}
+                  className="text-blue-600 font-semibold hover:underline"
+                >
+                  Register as a student
+                </button>{" "}
+                and we'll connect you with a fellowship near you.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Student Profile Modal */}
+      {selectedStudent && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-8">
+              <div className="flex justify-between items-start mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-700 to-indigo-700 flex items-center justify-center text-white text-2xl font-bold">
+                    {getInitials(selectedStudent.name)}
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-800">{selectedStudent.name}</h2>
+                    <p className="text-gray-500">{selectedStudent.university}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedStudent(null)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition"
+                >
+                  <X size={24} className="text-gray-500" />
+                </button>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Course</p>
+                    <p className="font-medium text-gray-800">{selectedStudent.course}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Year</p>
+                    <p className="font-medium text-gray-800">{selectedStudent.year}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Country</p>
+                    <p className="font-medium text-gray-800 flex items-center gap-2">
+                      <Globe size={16} />
+                      {selectedStudent.country}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Fellowship</p>
+                    <p className="font-medium text-gray-800">{selectedStudent.fellowship}</p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Status</p>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium inline-block ${getStatusColor(selectedStudent.status)}`}>
+                      {selectedStudent.status}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Prayer Requests</p>
+                    <p className="font-medium text-gray-800 flex items-center gap-2">
+                      <Heart size={16} className="text-red-500" />
+                      {selectedStudent.prayerRequests}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Joined</p>
+                    <p className="font-medium text-gray-800">{selectedStudent.joinedDate}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Contact</p>
+                    <div className="space-y-1 text-sm">
+                      {selectedStudent.email && (
+                        <p className="flex items-center gap-2 text-gray-600">
+                          <Mail size={14} /> {selectedStudent.email}
+                        </p>
+                      )}
+                      {selectedStudent.phone && (
+                        <p className="flex items-center gap-2 text-gray-600">
+                          <Phone size={14} /> {selectedStudent.phone}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-800">{event.title}</h3>
-                    <p className="text-gray-600 mt-2 flex items-center gap-2">
-                      <span>📍</span> {event.location}
-                    </p>
-                    <Link
-                      href="/events"
-                      className="mt-4 inline-block bg-blue-900 text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-800 transition text-sm"
-                    >
-                      Register Now →
-                    </Link>
-                  </div>
                 </div>
-              );
-            })}
-          </div>
+              </div>
 
-          <div className="text-center mt-10">
-            <Link
-              href="/events"
-              className="inline-block bg-blue-900 text-white px-10 py-4 rounded-full font-bold hover:bg-blue-800 transition shadow-lg"
-            >
-              View All Events →
-            </Link>
-          </div>
-        </div>
-      </section>
+              <div className="mt-6">
+                <p className="text-sm text-gray-500">Bio</p>
+                <p className="text-gray-600 mt-1">{selectedStudent.bio}</p>
+              </div>
 
-      {/* ===== TESTIMONIALS SECTION ===== */}
-      <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-50 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="text-blue-600 font-bold text-sm uppercase tracking-wider">Testimonials</span>
-            <h2 className="text-4xl font-bold text-blue-950 mt-2">What People Are Saying</h2>
-            <p className="text-gray-600 mt-3">Hear from students whose lives have been transformed through DLCSF.</p>
-          </div>
-
-          <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 relative">
-            <div className="absolute -top-4 left-8 text-6xl text-yellow-400">"</div>
-            <div className="relative z-10">
-              <p className="text-xl md:text-2xl text-gray-700 leading-relaxed italic">
-                {testimonials[currentTestimonial].text}
-              </p>
-              <div className="mt-6 flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                  {testimonials[currentTestimonial].name.split(' ').map(n => n[0]).join('')}
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-800">{testimonials[currentTestimonial].name}</h4>
-                  <p className="text-sm text-gray-500">{testimonials[currentTestimonial].role}</p>
-                  <div className="flex text-yellow-400 text-sm mt-1">
-                    {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
-                      <span key={i}>⭐</span>
+              {selectedStudent.interests && selectedStudent.interests.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-sm text-gray-500">Interests</p>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {selectedStudent.interests.map((interest: string, idx: number) => (
+                      <span key={idx} className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm">
+                        {interest}
+                      </span>
                     ))}
                   </div>
                 </div>
+              )}
+
+              <div className="flex gap-3 mt-6 pt-6 border-t border-gray-200">
+                <button className="flex-1 bg-blue-900 text-white px-4 py-2.5 rounded-xl font-semibold hover:bg-blue-800 transition flex items-center justify-center gap-2">
+                  <MessageCircle size={18} />
+                  Send Message
+                </button>
+                <button className="flex-1 bg-red-50 text-red-600 px-4 py-2.5 rounded-xl font-semibold hover:bg-red-100 transition flex items-center justify-center gap-2">
+                  <Heart size={18} />
+                  Pray for {selectedStudent.name.split(' ')[0]}
+                </button>
               </div>
             </div>
-
-            <div className="flex justify-center gap-3 mt-8">
-              <button
-                onClick={prevTestimonial}
-                className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
-              >
-                ←
-              </button>
-              <div className="flex gap-2 items-center">
-                {testimonials.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentTestimonial(index)}
-                    className={`w-3 h-3 rounded-full transition ${
-                      currentTestimonial === index ? "bg-blue-600" : "bg-gray-300"
-                    }`}
-                  />
-                ))}
-              </div>
-              <button
-                onClick={nextTestimonial}
-                className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
-              >
-                →
-              </button>
-            </div>
           </div>
         </div>
-      </section>
-
-      {/* ===== PRAYER SECTION ===== */}
-      <section className="py-20 bg-gradient-to-br from-blue-900 to-blue-700 text-white px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <span className="text-yellow-400 font-bold text-sm uppercase tracking-wider">Prayer</span>
-          <h2 className="text-4xl md:text-5xl font-bold mt-4 mb-6">
-            Join Us In Prayer
-          </h2>
-          <p className="text-blue-200 text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
-            Your prayer requests matter to us. Our global prayer team is standing
-            with you in faith. "Call unto me, and I will answer thee." - Jeremiah 33:3
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              href="/prayer"
-              className="bg-yellow-400 text-blue-950 px-8 py-3 rounded-full font-bold hover:bg-yellow-300 transition transform hover:scale-105 shadow-lg shadow-yellow-400/20"
-            >
-              Submit Prayer Request
-            </Link>
-            <Link
-              href="/prayer"
-              className="bg-white/20 text-white px-8 py-3 rounded-full font-bold backdrop-blur hover:bg-white/30 transition border border-white/20"
-            >
-              View Prayer Requests
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== RESOURCES SECTION ===== */}
-      <section className="py-20 bg-white px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="text-blue-600 font-bold text-sm uppercase tracking-wider">Resources</span>
-            <h2 className="text-4xl font-bold text-blue-950 mt-2">Equipping You for Growth</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto mt-3">
-              Access sermons, Bible studies, worship resources, and more to help you grow in your faith.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {resources.map((resource) => (
-              <Link
-                key={resource.title}
-                href={resource.link}
-                className="bg-gray-50 rounded-2xl p-6 text-center hover:shadow-lg transition transform hover:-translate-y-1 group border border-gray-100"
-              >
-                <div className="text-3xl mb-3 group-hover:scale-110 transition">{resource.icon}</div>
-                <h4 className="font-bold text-gray-800 text-sm">{resource.title}</h4>
-                <p className="text-xs text-gray-500 mt-1">{resource.desc}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== GALLERY SECTION ===== */}
-      <section className="py-20 bg-gray-50 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="text-blue-600 font-bold text-sm uppercase tracking-wider">Gallery</span>
-            <h2 className="text-4xl font-bold text-blue-950 mt-2">Moments of Faith</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto mt-3">
-              Capturing inspiring moments from conferences, outreaches, and fellowship gatherings.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { icon: "🙏", bg: "from-blue-500 to-blue-700", label: "Prayer Session" },
-              { icon: "🎵", bg: "from-purple-500 to-purple-700", label: "Worship Night" },
-              { icon: "📖", bg: "from-green-500 to-green-700", label: "Bible Study" },
-              { icon: "🤝", bg: "from-red-500 to-red-700", label: "Fellowship" },
-              { icon: "🌍", bg: "from-yellow-500 to-yellow-700", label: "Global Conference" },
-              { icon: "👥", bg: "from-indigo-500 to-indigo-700", label: "Campus Outreach" },
-              { icon: "✝️", bg: "from-pink-500 to-pink-700", label: "Evangelism" },
-              { icon: "💒", bg: "from-teal-500 to-teal-700", label: "Church Service" },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className={`bg-gradient-to-br ${item.bg} rounded-2xl h-48 flex flex-col items-center justify-center text-white hover:scale-105 transition shadow-lg cursor-pointer`}
-              >
-                <span className="text-5xl">{item.icon}</span>
-                <p className="text-sm font-medium mt-2">{item.label}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center mt-10">
-            <Link
-              href="/gallery"
-              className="inline-block bg-blue-900 text-white px-10 py-4 rounded-full font-bold hover:bg-blue-800 transition shadow-lg"
-            >
-              View Full Gallery →
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== NEWSLETTER SECTION ===== */}
-      <section className="py-20 bg-gradient-to-br from-blue-950 to-blue-800 text-white px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <span className="text-yellow-400 font-bold text-sm uppercase tracking-wider">Stay Connected</span>
-          <h2 className="text-4xl font-bold mt-4 mb-6">
-            Subscribe to Our Newsletter
-          </h2>
-          <p className="text-blue-200 text-lg leading-relaxed mb-8">
-            Get the latest updates, prayer requests, and event announcements delivered to your inbox.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 px-6 py-3.5 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            />
-            <button className="bg-yellow-400 text-blue-950 px-8 py-3.5 rounded-xl font-bold hover:bg-yellow-300 transition transform hover:scale-105 whitespace-nowrap">
-              Subscribe
-            </button>
-          </div>
-          <p className="text-xs text-blue-300 mt-3">We respect your privacy. Unsubscribe anytime.</p>
-        </div>
-      </section>
-
-      {/* ===== PARTNERS SECTION ===== */}
-      <section className="py-20 bg-white px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="text-blue-600 font-bold text-sm uppercase tracking-wider">Partners</span>
-            <h2 className="text-4xl font-bold text-blue-950 mt-2">Our Global Partners</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto mt-3">
-              We partner with churches and organizations to reach students across the world.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { name: "Worldwide Missions", icon: "🌍" },
-              { name: "Campus Crusade", icon: "🏫" },
-              { name: "Youth for Christ", icon: "🙏" },
-              { name: "Global Outreach", icon: "✝️" },
-            ].map((partner) => (
-              <div key={partner.name} className="bg-gray-50 rounded-2xl p-6 text-center border border-gray-100 hover:shadow-lg transition">
-                <div className="text-4xl mb-2">{partner.icon}</div>
-                <p className="font-semibold text-gray-800">{partner.name}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== FAQ SECTION ===== */}
-      <section className="py-20 bg-gray-50 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="text-blue-600 font-bold text-sm uppercase tracking-wider">FAQ</span>
-            <h2 className="text-4xl font-bold text-blue-950 mt-2">Frequently Asked Questions</h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {[
-              {
-                q: "Who can join DLCSF?",
-                a: "Any student or believer who wants to connect, grow, and share the Gospel."
-              },
-              {
-                q: "How do I join a fellowship?",
-                a: "Visit the Students page, fill in the registration form, and select a fellowship."
-              },
-              {
-                q: "Is there a membership fee?",
-                a: "No, DLCSF is free for all students and believers."
-              },
-              {
-                q: "How can I submit a prayer request?",
-                a: "Go to the Prayer page and fill in the prayer request form."
-              },
-            ].map((faq) => (
-              <div key={faq.q} className="bg-white rounded-2xl p-6 shadow hover:shadow-lg transition">
-                <h4 className="font-bold text-lg text-blue-900">{faq.q}</h4>
-                <p className="text-gray-600 mt-2">{faq.a}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== CALL TO ACTION SECTION ===== */}
-      <section className="py-20 bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 text-white px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Join the DLCSF Global Community
-          </h2>
-          <p className="text-blue-200 text-lg mb-8 max-w-2xl mx-auto">
-            Together we are raising godly students and spreading the Gospel
-            around the world.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              href="/register"
-              className="inline-block bg-yellow-400 text-blue-950 px-10 py-4 rounded-xl font-bold hover:bg-yellow-300 transition transform hover:scale-105 shadow-lg shadow-yellow-400/20"
-            >
-              Join Now
-            </Link>
-            <Link
-              href="/dashboard"
-              className="inline-block bg-white/20 text-white px-10 py-4 rounded-xl font-bold backdrop-blur hover:bg-white/30 transition border border-white/20"
-            >
-              Go to Dashboard
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-block bg-white/10 text-white px-10 py-4 rounded-xl font-bold backdrop-blur hover:bg-white/20 transition border border-white/10"
-            >
-              Contact Us
-            </Link>
-          </div>
-
-          <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-blue-200">
-            <span>✝️ Faith</span>
-            <span>•</span>
-            <span>🙏 Prayer</span>
-            <span>•</span>
-            <span>📖 Discipleship</span>
-            <span>•</span>
-            <span>❤️ Fellowship</span>
-            <span>•</span>
-            <span>🌍 Global</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== FOOTER SECTION ===== */}
-      <footer className="bg-gray-900 text-white py-16 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">✝️</span>
-                <h3 className="text-xl font-bold">DLCSF Global</h3>
-              </div>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Connecting students and believers across nations through faith, prayer, and fellowship.
-              </p>
-              <div className="flex gap-3 mt-4">
-                <a href="#" className="bg-gray-800 p-2 rounded-full hover:bg-gray-700 transition"><Twitter size={18} /></a>
-                <a href="#" className="bg-gray-800 p-2 rounded-full hover:bg-gray-700 transition"><Instagram size={18} /></a>
-                <a href="#" className="bg-gray-800 p-2 rounded-full hover:bg-gray-700 transition"><Linkedin size={18} /></a>
-                <a href="#" className="bg-gray-800 p-2 rounded-full hover:bg-gray-700 transition"><Youtube size={18} /></a>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="font-bold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link href="/about" className="hover:text-white transition">About Us</Link></li>
-                <li><Link href="/events" className="hover:text-white transition">Events</Link></li>
-                <li><Link href="/prayer" className="hover:text-white transition">Prayer</Link></li>
-                <li><Link href="/students" className="hover:text-white transition">Students</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition">Contact</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link href="/sermons" className="hover:text-white transition">Sermons</Link></li>
-                <li><Link href="/bible-study" className="hover:text-white transition">Bible Study</Link></li>
-                <li><Link href="/worship" className="hover:text-white transition">Worship</Link></li>
-                <li><Link href="/podcast" className="hover:text-white transition">Podcasts</Link></li>
-                <li><Link href="/gallery" className="hover:text-white transition">Gallery</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold mb-4">Get Involved</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link href="/register" className="hover:text-white transition">Join DLCSF</Link></li>
-                <li><Link href="/students" className="hover:text-white transition">Student Registration</Link></li>
-                <li><Link href="/prayer" className="hover:text-white transition">Prayer Requests</Link></li>
-                <li><Link href="/donate" className="hover:text-white transition">Support Mission</Link></li>
-                <li><Link href="/countries" className="hover:text-white transition">Global Reach</Link></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 mt-10 pt-8 text-center text-sm text-gray-400">
-            <p>© 2026 DLCSF Global. All Rights Reserved.</p>
-            <p className="mt-1">Made with ❤️ for the Kingdom of God.</p>
-            <div className="flex justify-center gap-4 mt-3 text-xs">
-              <Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link>
-              <span>•</span>
-              <Link href="/terms" className="hover:text-white transition">Terms of Service</Link>
-              <span>•</span>
-              <Link href="/cookies" className="hover:text-white transition">Cookie Policy</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </main>
+      )}
+    </div>
   );
 }
