@@ -6,7 +6,7 @@ const sermons = [
     title: "Walking by Faith",
     preacher: "DLCSF Global",
     date: "July 2026",
-    image: "/images/sermon1.jpg",
+    image: "/images/Gallery1.jpg",
     description:
       "Discover how unwavering faith produces victory in every season of life.",
   },
@@ -14,7 +14,7 @@ const sermons = [
     title: "Living a Holy Life",
     preacher: "DLCSF Global",
     date: "June 2026",
-    image: "/images/sermon2.jpg",
+    image: "/images/Gallery2.jpg",
     description:
       "Learn practical biblical principles for living a life that glorifies Christ.",
   },
@@ -22,7 +22,7 @@ const sermons = [
     title: "The Great Commission",
     preacher: "DLCSF Global",
     date: "May 2026",
-    image: "/images/sermon3.jpg",
+    image: "/images/Gallery3.jpg",
     description:
       "Be inspired to share the Gospel and impact your generation for Christ.",
   },

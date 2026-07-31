@@ -12,7 +12,7 @@ const events = [
     date: "August 15 - 20, 2026",
     location: "Lagos, Nigeria",
     time: "9:00 AM",
-    image: "/images/event1.jpg",
+    image: "/images/Gallery3.jpg",
     description:
       "A life-transforming gathering bringing together students, graduates, and leaders from around the world.",
   },
@@ -21,7 +21,7 @@ const events = [
     date: "September 12, 2026",
     location: "Online",
     time: "6:00 PM GMT",
-    image: "/images/event2.jpg",
+    image: "/images/Gallery4.jpg",
     description:
       "Join believers worldwide for a powerful night of worship, prayer, and revival.",
   },
@@ -30,7 +30,7 @@ const events = [
     date: "October 3 - 5, 2026",
     location: "Accra, Ghana",
     time: "10:00 AM",
-    image: "/images/event3.jpg",
+    image: "/images/Gallery5.jpg",
     description:
       "Equipping student leaders with biblical leadership principles for lasting kingdom impact.",
   },

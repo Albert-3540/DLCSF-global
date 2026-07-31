@@ -19,7 +19,7 @@ export default function AboutSection() {
           <div className="relative">
 
             <img
-              src="/images/about.jpg"
+              src="/images/Gallery2.jpg"
               alt="DLCSF Global Fellowship"
               className="rounded-[35px] w-full h-[650px] object-cover shadow-2xl"
             />

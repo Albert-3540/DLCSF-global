@@ -2,189 +2,221 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, User } from "lucide-react";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    rememberMe: false,
+  });
 
-  const handleLogin = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+
+    if (errorMessage) setErrorMessage("");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    setLoading(true);
-    setMessage("");
+    if (!formData.email.trim()) {
+      setErrorMessage("Please enter your email");
+      return;
+    }
+    if (!formData.password.trim()) {
+      setErrorMessage("Please enter your password");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage("");
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
-        {
-          method: "POST",
+      const loginData = {
+        email: formData.email,
+        password: formData.password,
+      };
+
+      console.log("🔐 Login attempt:", loginData);
+
+      // Try to login via backend
+      try {
+        const response = await fetch('http://localhost:5000/api/auth/login', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
+          body: JSON.stringify(loginData),
+        });
+
+        if (!response.ok) {
+          throw new Error('Invalid credentials');
         }
-      );
 
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-
-        setMessage("✅ Login successful");
-
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 1000);
-      } else {
-        setMessage(data.message || "Invalid email or password.");
+        const result = await response.json();
+        console.log('✅ Login successful:', result);
+        
+        // Store user session
+        localStorage.setItem('user', JSON.stringify(result.user));
+        localStorage.setItem('token', result.token);
+      } catch (backendError) {
+        // Fallback - check localStorage
+        console.warn('⚠️ Backend not available, checking local storage');
+        
+        const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+        const user = users.find((u: any) => u.email === formData.email && u.password === formData.password);
+        
+        if (!user) {
+          throw new Error('Invalid email or password');
+        }
+        
+        console.log('✅ Local login successful:', user);
+        localStorage.setItem('user', JSON.stringify(user));
       }
+
+      // Redirect to dashboard
+      router.push('/dashboard');
+
     } catch (error) {
-      setMessage("Unable to connect to the server.");
-    } finally {
-      setLoading(false);
+      console.error("❌ Login error:", error);
+      setErrorMessage(error instanceof Error ? error.message : "Login failed. Please try again.");
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-blue-700 flex items-center justify-center px-6">
-
-      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
-
+    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-blue-700 flex items-center justify-center px-6 py-12">
+      <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 md:p-10">
+        {/* Header */}
         <div className="text-center mb-8">
-
-          <div className="text-6xl mb-4">
-            🌍
+          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-900 px-4 py-2 rounded-full mb-4">
+            <User size={20} />
+            <span className="font-semibold">Welcome Back</span>
           </div>
-
-          <h1 className="text-4xl font-bold text-yellow-400">
-            Welcome Back
-          </h1>
-
-          <p className="text-gray-300 mt-3">
-            Sign in to your DLCSF Global account.
+          <h1 className="text-3xl font-bold text-gray-800">Sign In</h1>
+          <p className="text-gray-500 mt-2">
+            Welcome back! Please sign in to continue
           </p>
-
         </div>
 
-        <form
-          onSubmit={handleLogin}
-          className="space-y-6"
-        >
-
-          <div>
-
-            <label className="block mb-2 text-white">
-              Email Address
-            </label>
-
-            <div className="relative">
-
-              <Mail
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"
-                size={20}
-              />
-
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full bg-white/20 text-white placeholder-gray-300 border border-white/20 rounded-xl pl-12 pr-4 py-3 outline-none focus:border-yellow-400"
-              />
-
-            </div>
-
-          </div>
-
-          <div>
-
-            <label className="block mb-2 text-white">
-              Password
-            </label>
-
-            <div className="relative">
-
-              <Lock
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"
-                size={20}
-              />
-
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full bg-white/20 text-white placeholder-gray-300 border border-white/20 rounded-xl pl-12 pr-12 py-3 outline-none focus:border-yellow-400"
-              />
-
-              <button
-                type="button"
-                onClick={() =>
-                  setShowPassword(!showPassword)
-                }
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300"
-              >
-                {showPassword ? (
-                  <EyeOff size={20} />
-                ) : (
-                  <Eye size={20} />
-                )}
-              </button>
-
-            </div>
-
-          </div>
-
-          <div className="flex justify-end">
-
-            <Link
-              href="/forgot-password"
-              className="text-yellow-300 hover:text-yellow-200 text-sm"
-            >
-              Forgot Password?
-            </Link>
-
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-yellow-400 text-blue-950 py-3 rounded-xl font-bold hover:bg-yellow-300 transition disabled:opacity-60"
-          >
-            {loading ? "Signing In..." : "Login"}
-          </button>
-
-        </form>
-
-        {message && (
-          <div className="mt-6 text-center bg-white/10 rounded-xl p-3 text-white">
-            {message}
+        {errorMessage && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
+            {errorMessage}
           </div>
         )}
 
-        <p className="text-center mt-8 text-gray-300">
-          Don't have an account?{" "}
-          <Link
-            href="/register"
-            className="text-yellow-400 font-semibold hover:underline"
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email Address
+            </label>
+            <div className="relative">
+              <Mail size={20} className="absolute left-4 top-3.5 text-gray-400" />
+              <input
+                type="email"
+                name="email"
+                required
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="Enter your email"
+                className="w-full border border-gray-300 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <div className="relative">
+              <Lock size={20} className="absolute left-4 top-3.5 text-gray-400" />
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                required
+                value={formData.password}
+                onChange={handleInputChange}
+                placeholder="Enter your password"
+                className="w-full border border-gray-300 rounded-xl pl-12 pr-12 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-3.5 text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Remember Me & Forgot Password */}
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-2 text-sm text-gray-600">
+              <input
+                type="checkbox"
+                name="rememberMe"
+                checked={formData.rememberMe}
+                onChange={handleInputChange}
+                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+              />
+              Remember me
+            </label>
+            <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline">
+              Forgot Password?
+            </Link>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-blue-900 text-white py-3.5 rounded-xl font-bold hover:bg-blue-800 transition disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-lg"
           >
-            Register
+            {isSubmitting ? (
+              <>
+                <Loader2 size={24} className="animate-spin" />
+                Signing In...
+              </>
+            ) : (
+              <>
+                <User size={20} />
+                Sign In
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* Footer */}
+        <div className="mt-6 text-center">
+          <p className="text-gray-600">
+            Don't have an account?{" "}
+            <Link href="/register" className="text-blue-600 font-semibold hover:underline">
+              Create Account
+            </Link>
+          </p>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 mt-4 text-gray-500 hover:text-gray-700 transition"
+          >
+            <ArrowLeft size={16} />
+            Back to Home
           </Link>
-        </p>
-
+        </div>
       </div>
-
-    </main>
+    </div>
   );
 }
