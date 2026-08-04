@@ -110,7 +110,7 @@ export default function ActivitiesPage() {
         name: 'David Eze',
         role: 'Event Coordinator'
       },
-      timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
+      timestamp: "2026-08-04T06:20:00.000Z",
       likes: 89,
       comments: 34,
       shares: 23,
